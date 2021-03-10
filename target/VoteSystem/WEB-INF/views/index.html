@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Main page</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+<div class="container-fluid pt-5 text-center">
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th sec:authorize="hasRole('ROLE_STUDENT')">Vote</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question,index:${questions}">
+                    <th scope="row" th:text="${index.index + 1}"></th>
+                    <td th:text="${question.getName()}"></td>
+                    <td sec:authorize="hasRole('ROLE_STUDENT')">
+                        <a th:href="@{/vote/{id}(id=${question.getId()})}" class="btn btn-link">+</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

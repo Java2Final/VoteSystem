@@ -23,11 +23,20 @@
                 <button type="submit" class="btn btn-primary">Add option</button>
             </form>
             <h2>Options:</h2>
-            <div th:each="option: ${question.getQuestionOptions()}">
-                <div class="form-group">
-                    <a th:href="@{/admin/question/delete/{questionId}/{optionId}(questionId=${question.getId()},optionId=${option.getId()})}" th:text="${option.getName()}"></a>
-                </div>
-            </div>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Statistic</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="option: ${question.getQuestionOptions()}">
+                    <td><a th:href="@{/admin/question/delete/{questionId}/{optionId}(questionId=${question.getId()},optionId=${option.getId()})}" th:text="${option.getName()}"></a></td>
+                    <td th:each="stat:${statistic}" th:if="${stat.getKey().getName() == option.getName()}" th:text="${stat.getValue() + '%'}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

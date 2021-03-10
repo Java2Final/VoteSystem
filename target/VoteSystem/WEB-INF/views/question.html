@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Question update</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-4 offset-4">
+            <h2 class="h2">Question update</h2>
+            <form th:action="@{/admin/question/add/{id}(id=${question.getId()})}" th:method="POST" th:object="${question}" class="mt-5">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" th:value="${question.getName()}">
+                </div>
+                <div class="form-group">
+                    <label for="optionName">Option name</label>
+                    <input type="text" class="form-control" id="optionName" name="optionName">
+                </div>
+                <button type="submit" class="btn btn-primary">Add option</button>
+            </form>
+            <h2>Options:</h2>
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Statistic</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="option: ${question.getQuestionOptions()}">
+                    <td><a th:href="@{/admin/question/delete/{questionId}/{optionId}(questionId=${question.getId()},optionId=${option.getId()})}" th:text="${option.getName()}"></a></td>
+                    <td th:each="stat:${statistic}" th:if="${stat.getKey().getName() == option.getName()}" th:text="${stat.getValue() + '%'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

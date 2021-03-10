@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Question update</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-4 offset-4">
+            <h2 class="h2">Role update</h2>
+            <form th:action="@{/admin/role/{id}(id=${role.getId()})}" th:method="POST" th:object="${role}" class="mt-5">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input disabled="disabled" type="text" class="form-control" id="name" th:value="${role.getName()}">
+                </div>
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="authority: ${authorities}" th:if="${role.checkAuthority(authority)}">
+                            <td th:text="${authority.getName()}"></td>
+                            <td>
+                                <a th:href="@{/admin/role/delete/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">delete</a>
+                            </td>
+                        </tr>
+                        <tr th:each="authority: ${authorities}" th:if="${!role.checkAuthority(authority)}">
+                            <td th:text="${authority.getName()}"></td>
+                            <td>
+                                <a th:href="@{/admin/role/add/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">add</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity security) throws Exception {
         security.authorizeRequests()
                 .antMatchers("/", "/logout").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasAnyAuthority("update","delete","add")
                 .antMatchers("/student/**").hasAnyRole("STUDENT","ADMIN")
                 .antMatchers("/admin/question/add").hasAuthority("add")
                 .antMatchers("/admin/question/delete","/role/delete").hasAnyAuthority("update","delete")

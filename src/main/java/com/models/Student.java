@@ -54,6 +54,13 @@ public class Student extends User{
         this.answeredQuestions = answeredQuestions;
     }
 
+    public boolean containsQuestion(Question question) {
+        for (AnsweredQuestion answeredQuestion : answeredQuestions) {
+            if (answeredQuestion.getId().equals(question.getId())) return true;
+        }
+        return false;
+    }
+
     public void answerQuestion(AnsweredQuestion question) {
         answeredQuestions.add(question);
     }

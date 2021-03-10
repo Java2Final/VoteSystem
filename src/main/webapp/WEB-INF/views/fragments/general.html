@@ -24,9 +24,9 @@
                 <a class="nav-link" href="/logout">Logout</a>
             </li>
             <li sec:authorize="hasRole('ROLE_STUDENT')" class="nav-item">
-                <a class="nav-link" href="/student/">Profile</a>
+                <a class="nav-link" href="/student/">Student profile</a>
             </li>
-            <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
+            <li sec:authorize="hasAuthority('update')" class="nav-item">
                 <a class="nav-link" href="/admin/">Profile</a>
             </li>
             <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">

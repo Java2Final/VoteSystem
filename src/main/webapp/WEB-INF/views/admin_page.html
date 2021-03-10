@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <link th:insert="fragments/general.html :: bootstrapcss">
@@ -28,7 +29,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-4">
+        <div sec:authorize="hasRole('ROLE_ADMIN')" class="col-4">
             <h2 class="h2">Roles</h2>
             <table class="table">
                 <thead class="thead-dark">
@@ -39,21 +40,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="role,index:${roles}">
-                    <th scope="row" th:text="${index.index + 1}"></th>
-                    <td>
-                        <a th:href="@{/admin/role/{id}(id=${role.getId()})}" th:text="${role.getName()}"></a>
-                    </td>
-                    <td>
-                        <div th:each="authority: ${role.getAuthorities()}">
-                            <a th:text="${authority.getName()}"></a>
-                        </div>
-                    </td>
-                </tr>
+                    <tr th:each="role,index:${roles}">
+                        <th scope="row" th:text="${index.index + 1}"></th>
+                        <td>
+                            <a th:href="@{/admin/role/{id}(id=${role.getId()})}" th:text="${role.getName()}"></a>
+                        </td>
+                        <td>
+                            <div th:each="authority: ${role.getAuthorities()}">
+                                <a th:text="${authority.getName()}"></a>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        <div class="col-4">
+        <div sec:authorize="hasRole('ROLE_ADMIN')" class="col-4">
             <h2 class="h2">Students</h2>
             <table class="table">
                 <thead class="thead-dark">

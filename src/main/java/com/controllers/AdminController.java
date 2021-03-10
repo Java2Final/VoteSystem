@@ -1,5 +1,7 @@
 package com.controllers;
 
+import com.Thread.AuthorityThread;
+import com.Thread.RoleThread;
 import com.models.*;
 import com.repository.QuestionRepository;
 import com.repository.RoleRepository;
@@ -11,12 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final RoleRepository roleRepository;
@@ -58,10 +62,17 @@ public class AdminController {
     }
 
     @GetMapping("/role/{id}")
-    public String role(@PathVariable("id") Long id, Model model) {
-        Role role = roleRepository.getRole(id);
+    public String role(@PathVariable("id") Long id, Model model) throws InterruptedException {
+        RoleThread roleThread = new RoleThread(roleRepository, id);
+        AuthorityThread authorityThread = new AuthorityThread(roleRepository);
+        roleThread.start();
+        authorityThread.start();
+        roleThread.join();
+        authorityThread.join();
+        Role role = roleThread.getRole();
+        List<Authority> authorities = authorityThread.getAuthorities();
         model.addAttribute("role", role);
-        model.addAttribute("authorities", roleRepository.getAllAuthorities());
+        model.addAttribute("authorities", authorities);
         return "role";
     }
 
@@ -94,6 +105,7 @@ public class AdminController {
     public String question(@PathVariable("id") Long id, Model model) {
         Question question = questionRepository.getQuestion(id);
         model.addAttribute("question", question);
+        model.addAttribute("statistic",getStatistics(question));
         return "question";
     }
 
@@ -138,5 +150,29 @@ public class AdminController {
         student.setRole(role);
         studentRepository.updateStudent(student);
         return "redirect:/admin/";
+    }
+
+    public Map<Option, Integer> getStatistics(Question question) {
+        List<Student> students = studentRepository.getAllStudents();
+        Map<Option, Integer> statistics = new HashMap<>();
+        int totalCount = 0;
+        for (Student student : students) {
+            if (student.containsQuestion(question)) {
+                totalCount += 1;
+            }
+        }
+        for (Option option : question.getQuestionOptions()) {
+            int counter = 0;
+            for (Student student : students) {
+                for (AnsweredQuestion answeredQuestion : student.getAnsweredQuestions()) {
+                    if (answeredQuestion.getOptionId().equals(option.getId())) {
+                        counter += 1;
+                    }
+                }
+            }
+            double percentage = (((double) counter) / totalCount) * 100;
+            statistics.put(option, (int) percentage);
+        }
+        return statistics;
     }
 }

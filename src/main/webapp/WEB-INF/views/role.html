@@ -16,19 +16,28 @@
                     <label for="name">Name</label>
                     <input disabled="disabled" type="text" class="form-control" id="name" th:value="${role.getName()}">
                 </div>
-                <div th:each="authority: ${authorities}">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <div th:if="${role.checkAuthority(authority)}">
-                            <span th:text="${authority.getName()}"></span>
-                            <a th:href="@{/admin/role/delete/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">delete</a>
-                        </div>
-                        <div th:if="${!role.checkAuthority(authority)}">
-                            <span th:text="${authority.getName()}"></span>
-                            <a th:href="@{/admin/role/add/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">add</a>
-                        </div>
-                    </div>
-                </div>
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="authority: ${authorities}" th:if="${role.checkAuthority(authority)}">
+                            <td th:text="${authority.getName()}"></td>
+                            <td>
+                                <a th:href="@{/admin/role/delete/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">delete</a>
+                            </td>
+                        </tr>
+                        <tr th:each="authority: ${authorities}" th:if="${!role.checkAuthority(authority)}">
+                            <td th:text="${authority.getName()}"></td>
+                            <td>
+                                <a th:href="@{/admin/role/add/{roleId}/{authorityId}(roleId=${role.getId()},authorityId=${authority.getId()})}">add</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </form>
         </div>
     </div>

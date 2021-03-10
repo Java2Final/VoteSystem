@@ -15,12 +15,22 @@
                 <label for="name">Name</label>
                 <input disabled="disabled" type="text" class="form-control" id="name" th:value="${student.getUsername()}">
             </div>
-            <div th:each="role: ${roles}">
-                <div class="form-group">
-                    <span th:text="${role.getName()}"></span>
-                    <a th:href="@{/admin/student/assign/{username}/{roleId}(username=${student.getUsername()},roleId=${role.getId()})}">assign</a>
-                </div>
-            </div>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="role: ${roles}">
+                        <td th:text="${role.getName()}"></td>
+                        <td>
+                            <a th:href="@{/admin/student/assign/{username}/{roleId}(username=${student.getUsername()},roleId=${role.getId()})}">assign</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

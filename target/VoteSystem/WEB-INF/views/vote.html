@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Question update</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-4 offset-4">
+            <h2 class="h2">Question</h2>
+            <form th:action="@{/student/vote/{id}(id=${question.getId()})}" th:method="POST" th:object="${question}" class="mt-5">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" th:value="${question.getName()}">
+                </div>
+                <select name="option">
+                    <option th:each="option: ${question.getQuestionOptions()}" th:value="${option.getName()}" th:text="${option.getName()}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Vote</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
