@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Main page</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+
+<div class="container-fluid pt-5">
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Author</th>
+                    <th sec:authorize="hasRole('ROLE_LIBRARIAN')">Count of copies</th>
+                    <th sec:authorize="hasRole('ROLE_STUDENT')">Borrow</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book,index:${books}">
+                    <th scope="row" th:text="${index.index + 1}"></th>
+                    <td th:text="${book.getName()}"></td>
+                    <td th:text="${book.getAuthor()}"></td>
+                    <td sec:authorize="hasRole('ROLE_LIBRARIAN')" th:text="${book.getCount()}"></td>
+                    <td sec:authorize="hasRole('ROLE_STUDENT')">
+                        <a th:if="${book.getCount()} > 0" th:href="@{/borrow/{id}(id=${book.getId()})}" class="btn btn-link">+</a>
+                        <span th:if="${book.getCount()} == 0">out of stock</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
