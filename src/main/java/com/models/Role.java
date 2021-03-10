@@ -15,7 +15,7 @@ public class Role implements Serializable {
     private Long id;
     @Column(name = "role_name")
     private String name;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "roles_authorities",
             joinColumns = @JoinColumn(name = "role_id"),
@@ -41,6 +41,19 @@ public class Role implements Serializable {
 
     public Set<Authority> getAuthorities() {
         return authorities;
+    }
+
+    public boolean checkAuthority(Authority checkingAuthority) {
+        for (Authority authority : authorities) if (authority.getId() == checkingAuthority.getId()) return true;
+        return false;
+    }
+
+    public void removeAuthority(Authority removingAuthority) {
+        for (Authority authority : authorities)
+            if (authority.getId() == removingAuthority.getId()) {
+                authorities.remove(authority);
+                return;
+            }
     }
 
     public void setAuthorities(Set<Authority> authorities) {

@@ -12,26 +12,26 @@ public class Authority implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "authority_id")
-    private Long authority_id;
+    private Long id;
     @Column(name = "authority_name")
-    private String authority_name;
-    @ManyToMany(mappedBy = "authorities", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private String name;
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
     public long getId() {
-        return this.authority_id;
+        return this.id;
     }
 
     public void setId(long authority_id) {
-        this.authority_id = authority_id;
+        this.id = authority_id;
     }
 
     public String getName() {
-        return this.authority_name;
+        return this.name;
     }
 
     public void setName(String authority_name) {
-        this.authority_name = authority_name;
+        this.name = authority_name;
     }
 
     public Set<Role> getRoles() {

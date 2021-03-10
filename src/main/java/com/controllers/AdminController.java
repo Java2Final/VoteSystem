@@ -1,16 +1,17 @@
 package com.controllers;
 
-import com.models.Question;
-import com.models.Role;
-import com.models.User;
+import com.models.*;
 import com.repository.QuestionRepository;
 import com.repository.RoleRepository;
+import com.repository.StudentRepository;
 import com.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -19,6 +20,7 @@ public class AdminController {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final RoleRepository roleRepository;
+    private final StudentRepository studentRepository;
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -27,71 +29,114 @@ public class AdminController {
     }
 
     @Autowired
-    public AdminController(UserRepository userRepository, QuestionRepository questionRepository, RoleRepository roleRepository) {
+    public AdminController(UserRepository userRepository, QuestionRepository questionRepository, RoleRepository roleRepository, StudentRepository studentRepository) {
         this.userRepository = userRepository;
         this.questionRepository = questionRepository;
         this.roleRepository = roleRepository;
-    }
-
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("admin", new User());
-        return "admin_login";
+        this.studentRepository = studentRepository;
     }
 
     @GetMapping("/")
     public String adminPage(Model model) {
         model.addAttribute("questions", questionRepository.getAllQuestions());
         model.addAttribute("roles", userRepository.getAllRoles());
+        model.addAttribute("students",studentRepository.getAllStudents());
         return "admin_page";
     }
 
     @GetMapping("/add")
     public String add() {
-        return "add_question";
+        return "add";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/addRole")
+    public String addRole(Role role) {
+        if (roleRepository.getRole(role.getName()) == null) {
+            roleRepository.addRole(role);
+        }
+        return "redirect:/admin/";
+    }
+
+    @GetMapping("/role/{id}")
+    public String role(@PathVariable("id") Long id, Model model) {
+        Role role = roleRepository.getRole(id);
+        model.addAttribute("role", role);
+        model.addAttribute("authorities", roleRepository.getAllAuthorities());
+        return "role";
+    }
+
+    @GetMapping("/role/add/{roleId}/{authorityId}")
+    public String roleAdd(@PathVariable("roleId") Long roleId, @PathVariable("authorityId") Long authorityId) {
+        Role role = roleRepository.getRole(roleId);
+        Set<Authority> temp = role.getAuthorities();
+        if (temp.add(roleRepository.getAuthority(authorityId))) {
+            role.setAuthorities(temp);
+        }
+        roleRepository.updateRole(role);
+        return "redirect:/admin/";
+    }
+
+    @GetMapping("/role/delete/{roleId}/{authorityId}")
+    public String roleDelete(@PathVariable("roleId") Long roleId, @PathVariable("authorityId") Long authorityId) {
+        Role role = roleRepository.getRole(roleId);
+        role.removeAuthority(roleRepository.getAuthority(authorityId));
+        roleRepository.updateRole(role);
+        return "redirect:/admin/";
+    }
+
+    @PostMapping("/addQuestion")
     public String addQuestion(Question question) {
         questionRepository.addQuestion(question);
-        return "redirect:/admin";
+        return "redirect:/admin/";
     }
 
-    @GetMapping("/update/{id}")
-    public String update(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/question/{id}")
+    public String question(@PathVariable("id") Long id, Model model) {
         Question question = questionRepository.getQuestion(id);
         model.addAttribute("question", question);
         return "question";
     }
 
-    @PostMapping("/update/{id}")
-    public String updateQuestion(@PathVariable("id") Long id, Question question) {
-        Question question1 = questionRepository.getQuestion(id);
-        question1.setName(question.getName());
-        questionRepository.updateQuestion(question1);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/update2/{id}")
-    public String update2(@PathVariable("id") Long id, Model model) {
-        Role role = roleRepository.getRole(id);
-        model.addAttribute("role", role);
-        return "role";
-    }
-
-    @PostMapping("/update2/{id}")
-    public String updateRole(@PathVariable("id") Long id, Role role) {
-        Role role1 = roleRepository.getRole(role.getId());
-        role1.setName(role.getName());
-        role1.setAuthorities(role.getAuthorities());
-        roleRepository.updateRole(role1);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteQuestion(@PathVariable("id") Long id) {
+    @PostMapping("/question/add/{id}")
+    public String questionAdd(@PathVariable("id") Long id, @RequestParam("optionName") String optionName) {
         Question question = questionRepository.getQuestion(id);
-        questionRepository.deleteQuestion(question);
-        return "redirect:/admin";
+        questionRepository.addOption(new Option(optionName));
+        question.addOption(questionRepository.getOption(optionName));
+        questionRepository.updateQuestion(question);
+        return "redirect:/admin/";
+    }
+
+    @GetMapping("/question/delete/{questionId}/{optionId}")
+    public String questionDelete(@PathVariable("questionId") Long questionId, @PathVariable("optionId") Long optionId) {
+        Question question = questionRepository.getQuestion(questionId);
+        question.removeOption(optionId);
+        questionRepository.updateQuestion(question);
+        return "redirect:/admin/";
+    }
+
+    @PostMapping("/addStudent")
+    public String addStudent(Student student) {
+        if (studentRepository.findByUserName(student.getUsername()) == null) {
+            student.setPassword(passwordEncoder.encode(student.getPassword()));
+            studentRepository.addStudent(student);
+        }
+        return "redirect:/admin/";
+    }
+
+    @GetMapping("/student/{username}")
+    public String student(@PathVariable("username") String username, Model model) {
+        Student student = studentRepository.findByUserName(username);
+        model.addAttribute("student", student);
+        model.addAttribute("roles", roleRepository.getAllRoles());
+        return "student";
+    }
+
+    @GetMapping("/student/assign/{username}/{roleId}")
+    public String studentAssign(@PathVariable("username") String username, @PathVariable("roleId") Long roleId) {
+        Student student = studentRepository.findByUserName(username);
+        Role role = roleRepository.getRole(roleId);
+        student.setRole(role);
+        studentRepository.updateStudent(student);
+        return "redirect:/admin/";
     }
 }

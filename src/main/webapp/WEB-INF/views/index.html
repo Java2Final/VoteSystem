@@ -7,8 +7,7 @@
 </head>
 <body>
 <header th:insert="fragments/general.html :: header"></header>
-
-<div class="container-fluid pt-5">
+<div class="container-fluid pt-5 text-center">
     <div class="row">
         <div class="col">
             <table class="table">
@@ -16,20 +15,15 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Author</th>
-                    <th sec:authorize="hasRole('ROLE_LIBRARIAN')">Count of copies</th>
-                    <th sec:authorize="hasRole('ROLE_STUDENT')">Borrow</th>
+                    <th sec:authorize="hasRole('ROLE_STUDENT')">Vote</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="book,index:${books}">
+                <tr th:each="question,index:${questions}">
                     <th scope="row" th:text="${index.index + 1}"></th>
-                    <td th:text="${book.getName()}"></td>
-                    <td th:text="${book.getAuthor()}"></td>
-                    <td sec:authorize="hasRole('ROLE_LIBRARIAN')" th:text="${book.getCount()}"></td>
+                    <td th:text="${question.getName()}"></td>
                     <td sec:authorize="hasRole('ROLE_STUDENT')">
-                        <a th:if="${book.getCount()} > 0" th:href="@{/borrow/{id}(id=${book.getId()})}" class="btn btn-link">+</a>
-                        <span th:if="${book.getCount()} == 0">out of stock</span>
+                        <a th:href="@{/vote/{id}(id=${question.getId()})}" class="btn btn-link">+</a>
                     </td>
                 </tr>
                 </tbody>

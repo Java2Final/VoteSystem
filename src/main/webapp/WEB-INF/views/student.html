@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:insert="fragments/general.html :: bootstrapcss">
+    <title>Student update</title>
+</head>
+<body>
+<header th:insert="fragments/general.html :: header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-4 offset-4">
+            <h2 class="h2">Student update</h2>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input disabled="disabled" type="text" class="form-control" id="name" th:value="${student.getUsername()}">
+            </div>
+            <div th:each="role: ${roles}">
+                <div class="form-group">
+                    <span th:text="${role.getName()}"></span>
+                    <a th:href="@{/admin/student/assign/{username}/{roleId}(username=${student.getUsername()},roleId=${role.getId()})}">assign</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

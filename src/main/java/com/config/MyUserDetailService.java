@@ -2,6 +2,7 @@ package com.config;
 
 import com.models.Authority;
 import com.models.Role;
+import com.models.Student;
 import com.models.User;
 import com.repository.StudentRepository;
 import com.repository.UserRepository;
@@ -52,6 +53,9 @@ public class MyUserDetailService implements UserDetailsService {
             user = studentRepository.findByUserName(username);
         }
         Role role = user.getRole();
+        if (role.getId() == 2) {
+            user = studentRepository.findByUserName(username);
+        }
         Set<Authority> authorities = role.getAuthorities();
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 

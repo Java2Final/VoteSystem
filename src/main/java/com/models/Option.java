@@ -2,6 +2,8 @@ package com.models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "OptionEntity")
 @Table(name = "options")
@@ -13,6 +15,14 @@ public class Option implements Serializable {
     private Long id;
     @Column(name = "option_name")
     private String name;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Question> questions = new HashSet<>();
+
+    public Option(String name) {
+        this.name = name;
+    }
+
+    public Option() { }
 
     public Long getId() {
         return id;

@@ -10,19 +10,24 @@
 <div class="container">
     <div class="row">
         <div class="col-4 offset-4">
-            <h2 class="h2">Book update</h2>
-            <form th:action="@{/admin/update/{id}(id=${question.getId()})}" th:method="POST" th:object="${question}" class="mt-5">
+            <h2 class="h2">Question update</h2>
+            <form th:action="@{/admin/question/add/{id}(id=${question.getId()})}" th:method="POST" th:object="${question}" class="mt-5">
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" class="form-control" id="name" th:value="${question.getName()}">
                 </div>
-                <div th:each="option: ${question.getQuestionOptions()}">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" th:id="'option' + ${option.getId()}" th:value="${option.getName()}">
-                    </div>
+                <div class="form-group">
+                    <label for="optionName">Option name</label>
+                    <input type="text" class="form-control" id="optionName" name="optionName">
                 </div>
+                <button type="submit" class="btn btn-primary">Add option</button>
             </form>
+            <h2>Options:</h2>
+            <div th:each="option: ${question.getQuestionOptions()}">
+                <div class="form-group">
+                    <a th:href="@{/admin/question/delete/{questionId}/{optionId}(questionId=${question.getId()},optionId=${option.getId()})}" th:text="${option.getName()}"></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

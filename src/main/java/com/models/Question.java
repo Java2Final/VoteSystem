@@ -15,7 +15,7 @@ public class Question implements Serializable {
     private Long id;
     @Column(name = "question_name")
     private String name;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "question_options",
             joinColumns = @JoinColumn(name = "question_id"),
@@ -51,7 +51,7 @@ public class Question implements Serializable {
         questionOptions.add(option);
     }
 
-    public void deleteOption(Long optionId) {
+    public void removeOption(Long optionId) {
         for (Option option : questionOptions) {
             if (optionId.equals(option.getId())) {
                 questionOptions.remove(option);

@@ -1,11 +1,14 @@
 package com.repository;
 
+import com.models.Option;
 import com.models.Question;
+import com.models.Role;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -38,6 +41,21 @@ public class QuestionRepository {
         return null;
     }
 
+    public List<Option> getAllOptions() {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Option> cq = cb.createQuery(Option.class);
+            Root<Option> rootEntry = cq.from(Option.class);
+            CriteriaQuery<Option> all = cq.select(rootEntry);
+            TypedQuery<Option> allQuery = session.createQuery(all);
+            return allQuery.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Question getQuestion(long id) {
         Question question = null;
         try (Session session = sessionFactory.openSession()) {
@@ -48,6 +66,8 @@ public class QuestionRepository {
             Predicate predicateQuestion = builder.equal(root.get("id"), id);
             question = session.createQuery(q1.where(predicateQuestion)).getSingleResult();
             session.getTransaction().commit();
+        } catch (NoResultException exception) {
+            exception.printStackTrace();
         }
         return question;
     }
@@ -58,6 +78,31 @@ public class QuestionRepository {
             session.persist(question);
             session.getTransaction().commit();
         }
+    }
+
+    public void addOption(Option option) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            if (getOption(option.getName()) == null) {
+                session.persist(option);
+                session.getTransaction().commit();
+            }
+        }
+    }
+    public Option getOption(String optionName) {
+        Option option = null;
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Option> q1 = builder.createQuery(Option.class);
+            Root<Option> root = q1.from(Option.class);
+            Predicate predicateRole = builder.equal(root.get("name"), optionName);
+            option = session.createQuery(q1.where(predicateRole)).getSingleResult();
+            session.getTransaction().commit();
+        } catch (NoResultException exception) {
+            exception.printStackTrace();
+        }
+        return option;
     }
 
     public void updateQuestion(Question question) {

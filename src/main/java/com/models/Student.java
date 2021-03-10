@@ -14,17 +14,13 @@ public class Student extends User{
     private String lastname;
     @Column(name = "groupName")
     private String groupName;
-    @Column(name = "age")
-    private int age;
-    @Column(name = "interests")
-    private String interests;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "answered_questions",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = {@JoinColumn(name = "question_id")}
+            inverseJoinColumns = {@JoinColumn(name = "answered_question_id")}
     )
-    private Set<Question> answeredQuestions = new HashSet<>();
+    private Set<AnsweredQuestion> answeredQuestions = new HashSet<>();
 
     public String getFirstname() {
         return firstname;
@@ -50,31 +46,15 @@ public class Student extends User{
         this.groupName = groupName;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getInterests() {
-        return interests;
-    }
-
-    public void setInterests(String interests) {
-        this.interests = interests;
-    }
-
-    public Set<Question> getAnsweredQuestions() {
+    public Set<AnsweredQuestion> getAnsweredQuestions() {
         return answeredQuestions;
     }
 
-    public void setAnsweredQuestions(Set<Question> answeredQuestions) {
+    public void setAnsweredQuestions(Set<AnsweredQuestion> answeredQuestions) {
         this.answeredQuestions = answeredQuestions;
     }
 
-    public void answerQuestion(Question question) {
+    public void answerQuestion(AnsweredQuestion question) {
         answeredQuestions.add(question);
     }
 }

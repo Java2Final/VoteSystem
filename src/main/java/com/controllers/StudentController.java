@@ -1,5 +1,7 @@
 package com.controllers;
 
+import com.models.AnsweredQuestion;
+import com.models.Option;
 import com.models.Student;
 import org.springframework.security.core.Authentication;
 import com.repository.QuestionRepository;
@@ -28,15 +30,43 @@ public class StudentController {
         this.questionRepository = questionRepository;
     }
 
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("student", new Student());
-        return "student_login";
-    }
-
     @GetMapping("/")
     public String studentPage(Model model, Authentication authentication) {
-        model.addAttribute("student",studentRepository.findByUserName(authentication.getName()));
+        Student student = studentRepository.findByUserName(authentication.getName());
+        model.addAttribute("student",student);
+        model.addAttribute("answered_questions",student.getAnsweredQuestions());
+        model.addAttribute("questions",questionRepository.getAllQuestions());
+        model.addAttribute("options",questionRepository.getAllOptions());
         return "student_profile";
+    }
+
+    @PostMapping("/update")
+    public String update(Student student, Authentication authentication) {
+        Student student1 = studentRepository.findByUserName(authentication.getName());
+        student1.setUsername(student.getUsername());
+        student1.setPassword(passwordEncoder.encode(student.getPassword()));
+        student1.setFirstname(student.getFirstname());
+        student1.setLastname(student.getLastname());
+        student1.setGroupName(student.getGroupName());
+        studentRepository.updateStudent(student1);
+        return "redirect:/student/";
+    }
+
+    @PostMapping("/vote/{id}")
+    public String vote(@PathVariable("id") long id, @RequestParam("option") String optionName, Authentication authentication) {
+        Student student = studentRepository.findByUserName(authentication.getName());
+        System.out.println(id);
+        if (questionRepository.getQuestion(id) != null) {
+            Option option = questionRepository.getOption(optionName);
+            AnsweredQuestion answeredQuestion = new AnsweredQuestion();
+            System.out.println(id);
+            System.out.println(optionName);
+            System.out.println(option.getId());
+            answeredQuestion.setId(id);
+            answeredQuestion.setOptionId(option.getId());
+            student.answerQuestion(answeredQuestion);
+            studentRepository.voteStudent(student, answeredQuestion);
+        }
+        return "redirect:/student/";
     }
 }
