@@ -1,7 +1,5 @@
 package com.controllers;
 
-import com.Thread.AuthorityThread;
-import com.Thread.RoleThread;
 import com.models.*;
 import com.repository.QuestionRepository;
 import com.repository.RoleRepository;
@@ -63,14 +61,8 @@ public class AdminController {
 
     @GetMapping("/role/{id}")
     public String role(@PathVariable("id") Long id, Model model) throws InterruptedException {
-        RoleThread roleThread = new RoleThread(roleRepository, id);
-        AuthorityThread authorityThread = new AuthorityThread(roleRepository);
-        roleThread.start();
-        authorityThread.start();
-        roleThread.join();
-        authorityThread.join();
-        Role role = roleThread.getRole();
-        List<Authority> authorities = authorityThread.getAuthorities();
+        Role role = roleRepository.getRole(id);
+        List<Authority> authorities = roleRepository.getAllAuthorities();
         model.addAttribute("role", role);
         model.addAttribute("authorities", authorities);
         return "role";
