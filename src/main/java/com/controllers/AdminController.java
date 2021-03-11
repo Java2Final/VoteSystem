@@ -5,6 +5,8 @@ import com.repository.QuestionRepository;
 import com.repository.RoleRepository;
 import com.repository.StudentRepository;
 import com.repository.UserRepository;
+import com.thread.AuthorityThread;
+import com.thread.RoleThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -61,8 +63,14 @@ public class AdminController {
 
     @GetMapping("/role/{id}")
     public String role(@PathVariable("id") Long id, Model model) throws InterruptedException {
-        Role role = roleRepository.getRole(id);
-        List<Authority> authorities = roleRepository.getAllAuthorities();
+        RoleThread roleThread = new RoleThread(roleRepository, id);
+        AuthorityThread authorityThread = new AuthorityThread(roleRepository);
+        roleThread.start();
+        authorityThread.start();
+        roleThread.join();
+        authorityThread.join();
+        Role role = roleThread.getRole();
+        List<Authority> authorities = authorityThread.getAuthorities();
         model.addAttribute("role", role);
         model.addAttribute("authorities", authorities);
         return "role";
